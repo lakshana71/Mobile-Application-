@@ -1,0 +1,8 @@
+{
+  "appId": "ai.skillsphere.app",
+  "appName": "SkillSphere AI",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  }
+}

@@ -160,7 +160,7 @@ export const scanProjectFiles = async (
       category: 'Large Bundle Size',
       impact: 'Medium',
       filePath: 'src/App.tsx',
-      explanation: 'Heavy route components loaded synchronously without dynamic import code-splitting.',
+      description: 'The app is not yet taking advantage of route-level code splitting for heavier views.',
       suggestion: 'Use React.lazy() and React.Suspense to split routes into on-demand chunks.',
     });
   }

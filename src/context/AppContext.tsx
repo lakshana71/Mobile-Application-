@@ -46,6 +46,10 @@ interface AppContextType {
   sendMentorMessage: (text: string) => void;
   markNotificationRead: (id: string) => void;
   regenerateRoadmap: () => void;
+  isMobileDrawerOpen: boolean;
+  setIsMobileDrawerOpen: (open: boolean) => void;
+  viewMode: 'web' | 'mobile' | 'simulator';
+  setViewMode: (mode: 'web' | 'mobile' | 'simulator') => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -242,6 +246,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     saveNotifications(updated);
   };
 
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState<boolean>(false);
+  const [viewMode, setViewMode] = useState<'web' | 'mobile' | 'simulator'>('web');
+
   return (
     <AppContext.Provider
       value={{
@@ -267,6 +274,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         sendMentorMessage,
         markNotificationRead,
         regenerateRoadmap,
+        isMobileDrawerOpen,
+        setIsMobileDrawerOpen,
+        viewMode,
+        setViewMode,
       }}
     >
       {children}

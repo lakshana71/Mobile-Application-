@@ -1,30 +1,50 @@
 import React, { useState } from 'react';
-import { Search, Bell, Flame, Target, Sparkles, CheckCircle2, ChevronRight, X } from 'lucide-react';
+import { Search, Bell, Flame, Target, Sparkles, CheckCircle2, ChevronRight, X, Smartphone, Menu, Laptop } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
 export const TopBar: React.FC = () => {
-  const { userProfile, score360, notifications, markNotificationRead, setActiveTab } = useApp();
+  const {
+    userProfile,
+    score360,
+    notifications,
+    markNotificationRead,
+    setActiveTab,
+    setIsMobileDrawerOpen,
+    viewMode,
+    setViewMode,
+  } = useApp();
   const [showNotifMenu, setShowNotifMenu] = useState(false);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
-    <header className="sticky top-0 z-20 w-full bg-white/70 backdrop-blur-md border-b border-slate-200/80 px-6 py-3 flex items-center justify-between">
+    <header className="sticky top-0 z-20 w-full bg-white/70 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-6 py-3 flex items-center justify-between">
       
-      {/* Search Input */}
-      <div className="flex items-center space-x-3 w-72">
-        <div className="relative w-full">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Search skills, roadmap steps, tools..."
-            className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-100/80 border border-transparent text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-brand-primary/40 focus:ring-2 focus:ring-brand-primary/10 transition-all"
-          />
+      {/* Mobile Drawer Trigger for small screens */}
+      <div className="flex items-center space-x-2">
+        <button
+          onClick={() => setIsMobileDrawerOpen(true)}
+          className="md:hidden p-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors"
+          aria-label="Open Drawer Navigation"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+
+        {/* Search Input */}
+        <div className="hidden sm:flex items-center space-x-3 w-64 lg:w-72">
+          <div className="relative w-full">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search skills, roadmap steps, tools..."
+              className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-100/80 border border-transparent text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-brand-primary/40 focus:ring-2 focus:ring-brand-primary/10 transition-all"
+            />
+          </div>
         </div>
       </div>
 
       {/* Center Target Role Pill */}
-      <div className="hidden lg:flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-brand-primary/10 via-brand-secondary/10 to-brand-accent/10 border border-brand-primary/20 text-xs font-semibold text-slate-800">
+      <div className="hidden xl:flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-brand-primary/10 via-brand-secondary/10 to-brand-accent/10 border border-brand-primary/20 text-xs font-semibold text-slate-800">
         <Target className="w-3.5 h-3.5 text-brand-primary" />
         <span>Target: <span className="font-bold text-brand-primary">{userProfile.dreamCareer}</span></span>
         <span className="text-slate-300">•</span>
@@ -32,18 +52,41 @@ export const TopBar: React.FC = () => {
       </div>
 
       {/* Right Side Stats & Actions */}
-      <div className="flex items-center space-x-4">
-        
+      <div className="flex items-center space-x-2 sm:space-x-3">
+
+        {/* Device Mode Switcher */}
+        <button
+          onClick={() => setViewMode(viewMode === 'simulator' ? 'web' : 'simulator')}
+          className={`p-2 rounded-xl border text-xs font-bold flex items-center space-x-1.5 transition-all shadow-sm ${
+            viewMode === 'simulator'
+              ? 'bg-slate-900 text-white border-slate-900'
+              : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+          }`}
+          title="Toggle Mobile Simulator"
+        >
+          {viewMode === 'simulator' ? (
+            <>
+              <Laptop className="w-4 h-4 text-brand-accent" />
+              <span className="hidden md:inline">Web Desktop</span>
+            </>
+          ) : (
+            <>
+              <Smartphone className="w-4 h-4 text-emerald-600" />
+              <span className="hidden md:inline">Mobile App View</span>
+            </>
+          )}
+        </button>
+
         {/* Streak Pill */}
-        <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-xs font-bold shadow-sm">
+        <div className="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-xs font-bold shadow-sm">
           <Flame className="w-4 h-4 text-amber-500 fill-amber-500 animate-pulse" />
-          <span>{userProfile.streakDays} Day Streak</span>
+          <span>{userProfile.streakDays}d</span>
         </div>
 
         {/* 360 Score Badge */}
-        <div className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full bg-brand-primary/10 text-brand-primary border border-brand-primary/20 text-xs font-extrabold shadow-sm">
+        <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-brand-primary/10 text-brand-primary border border-brand-primary/20 text-xs font-extrabold shadow-sm">
           <Sparkles className="w-3.5 h-3.5 text-brand-accent" />
-          <span>Score: {score360.overallScore}/100</span>
+          <span>Score: {score360.overallScore}</span>
         </div>
 
         {/* Notifications Bell Dropdown */}

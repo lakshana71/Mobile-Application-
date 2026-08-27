@@ -4,7 +4,6 @@ import {
   LayoutDashboard,
   Target,
   MapPin,
-  Briefcase,
   BarChart3,
   MessageSquare,
   Trophy,
@@ -14,9 +13,16 @@ import {
   FileText,
   Code2,
   Mic,
-  Building,
   Users,
   Sparkles,
+  Orbit,
+  ScanSearch,
+  Workflow,
+  RotateCw,
+  FileCode,
+  UploadCloud,
+  Dna,
+  Bot,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { NavigationTab } from '../../types';
@@ -24,21 +30,22 @@ import { NavigationTab } from '../../types';
 export const Sidebar: React.FC = () => {
   const { activeTab, setActiveTab, logout, userProfile } = useApp();
 
-  const mainNavItems: { id: NavigationTab; label: string; icon: React.ReactNode; badge?: string }[] = [
-    { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4" /> },
-    { id: 'skill-gap', label: 'Skill Gap Matrix', icon: <Target className="w-4 h-4" /> },
-    { id: 'roadmap', label: 'Dynamic Roadmap', icon: <MapPin className="w-4 h-4" /> },
-    { id: 'projects', label: 'Failure Analysis & Drills', icon: <Briefcase className="w-4 h-4" /> },
-    { id: 'analytics', label: 'Weekly Analytics', icon: <BarChart3 className="w-4 h-4" /> },
-    { id: 'mentor', label: 'Agentic AI Mentor', icon: <MessageSquare className="w-4 h-4" />, badge: 'AI' },
-    { id: 'career-goals', label: 'Career Alignment', icon: <Target className="w-4 h-4" /> },
+  const twinModules: { id: NavigationTab; label: string; icon: React.ReactNode; badge?: string }[] = [
+    { id: 'dashboard', label: 'Dashboard Overview', icon: <LayoutDashboard className="w-4 h-4" /> },
+    { id: 'circular-workflow', label: '360° Circular Journey', icon: <RotateCw className="w-4 h-4" />, badge: '360°' },
+    { id: 'practical-assessment', label: '1. Practical Assessment', icon: <FileCode className="w-4 h-4" />, badge: 'M1' },
+    { id: 'project-analysis', label: '2. Project Analysis', icon: <UploadCloud className="w-4 h-4" />, badge: 'M2' },
+    { id: 'skill-gap-engine', label: '3. Skill Gap Engine', icon: <BarChart3 className="w-4 h-4" />, badge: 'M3' },
+    { id: 'skill-genome', label: '4. Skill Genome AI', icon: <Dna className="w-4 h-4" />, badge: 'M4' },
+    { id: 'skill-evolution', label: '5. Skill Evolution', icon: <Workflow className="w-4 h-4" />, badge: 'M5' },
+    { id: 'ai-shadow-mentor', label: '6. AI Shadow Mentor', icon: <Bot className="w-4 h-4" />, badge: 'M6' },
   ];
 
-  const toolsNavItems: { id: NavigationTab; label: string; icon: React.ReactNode; badge?: string }[] = [
-    { id: 'resume-analyzer', label: 'Resume Analyzer', icon: <FileText className="w-4 h-4" /> },
-    { id: 'github-analyzer', label: 'GitHub Analyzer', icon: <Code2 className="w-4 h-4" /> },
+  const secondaryTools: { id: NavigationTab; label: string; icon: React.ReactNode; badge?: string }[] = [
+    { id: 'roadmap', label: 'Personalized Challenges', icon: <MapPin className="w-4 h-4" /> },
     { id: 'mock-interview', label: 'AI Mock Interview', icon: <Mic className="w-4 h-4" />, badge: 'Live' },
-    { id: 'internships', label: 'AI Internships', icon: <Building className="w-4 h-4" /> },
+    { id: 'resume-analyzer', label: 'Resume Analyzer', icon: <FileText className="w-4 h-4" /> },
+    { id: 'github-analyzer', label: 'GitHub Deep Audit', icon: <Code2 className="w-4 h-4" /> },
     { id: 'community', label: 'Peer Learning', icon: <Users className="w-4 h-4" /> },
     { id: 'achievements', label: 'Achievements', icon: <Trophy className="w-4 h-4" /> },
   ];
@@ -49,28 +56,31 @@ export const Sidebar: React.FC = () => {
   ];
 
   return (
-    <aside className="w-64 bg-white/70 backdrop-blur-xl border-r border-slate-200/80 flex flex-col justify-between h-screen sticky top-0 z-30 select-none">
+    <aside className="hidden md:flex w-64 bg-white/70 backdrop-blur-xl border-r border-slate-200/80 flex-col justify-between h-screen sticky top-0 z-30 select-none">
       
       {/* Brand Header */}
       <div>
         <div className="p-5 flex items-center space-x-3 border-b border-slate-200/60">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-primary via-brand-secondary to-brand-accent flex items-center justify-center shadow-glow-primary">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-primary via-brand-secondary to-brand-accent flex items-center justify-center shadow-glow-primary flex-shrink-0">
             <BrainCircuit className="w-5 h-5 text-white" />
           </div>
-          <div>
-            <span className="font-bold text-base text-slate-900 tracking-tight">SkillGap<span className="gradient-text">.AI</span></span>
-            <span className="block text-[10px] text-slate-400 font-medium uppercase tracking-wider">360° Career Intelligence</span>
+          <div className="truncate">
+            <span className="font-bold text-base text-slate-900 tracking-tight">SkillSphere<span className="gradient-text">.AI</span></span>
+            <span className="block text-[9px] text-slate-400 font-semibold uppercase tracking-wider truncate">Digital Skill Twin</span>
           </div>
         </div>
 
         {/* Navigation Sections */}
-        <div className="px-3 py-4 space-y-6 max-h-[calc(100vh-180px)] overflow-y-auto">
+        <div className="px-3 py-4 space-y-5 max-h-[calc(100vh-180px)] overflow-y-auto">
           
-          {/* Main Group */}
+          {/* Digital Skill Twin Architecture Group */}
           <div>
-            <div className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Main Dashboard</div>
+            <div className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center justify-between">
+              <span>Digital Skill Twin Core</span>
+              <Sparkles className="w-3 h-3 text-brand-primary" />
+            </div>
             <div className="space-y-1">
-              {mainNavItems.map((item) => {
+              {twinModules.map((item) => {
                 const isActive = activeTab === item.id;
                 return (
                   <button
@@ -82,12 +92,12 @@ export const Sidebar: React.FC = () => {
                         : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                     }`}
                   >
-                    <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-2.5 truncate">
                       {item.icon}
-                      <span>{item.label}</span>
+                      <span className="truncate">{item.label}</span>
                     </div>
                     {item.badge && (
-                      <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-extrabold uppercase ${
+                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase ${
                         isActive ? 'bg-white/20 text-white' : 'bg-brand-primary/10 text-brand-primary'
                       }`}>
                         {item.badge}
@@ -99,33 +109,28 @@ export const Sidebar: React.FC = () => {
             </div>
           </div>
 
-          {/* AI Tools Group */}
+          {/* Secondary Tools */}
           <div>
-            <div className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center justify-between">
-              <span>AI Skill Modules</span>
-              <Sparkles className="w-3 h-3 text-brand-accent" />
-            </div>
+            <div className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Practice & Drills</div>
             <div className="space-y-1">
-              {toolsNavItems.map((item) => {
+              {secondaryTools.map((item) => {
                 const isActive = activeTab === item.id;
                 return (
                   <button
                     key={item.id}
                     onClick={() => setActiveTab(item.id)}
-                    className={`w-full px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-all ${
+                    className={`w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between transition-all ${
                       isActive
-                        ? 'bg-brand-primary text-white shadow-md shadow-brand-primary/20 font-bold'
+                        ? 'bg-brand-primary text-white shadow-md font-bold'
                         : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                     }`}
                   >
-                    <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-2.5 truncate">
                       {item.icon}
-                      <span>{item.label}</span>
+                      <span className="truncate">{item.label}</span>
                     </div>
                     {item.badge && (
-                      <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-extrabold uppercase ${
-                        isActive ? 'bg-white/20 text-white' : 'bg-brand-accent/20 text-cyan-600'
-                      }`}>
+                      <span className="px-1.5 py-0.5 rounded text-[8px] font-extrabold uppercase bg-slate-100 text-slate-600">
                         {item.badge}
                       </span>
                     )}
@@ -134,6 +139,7 @@ export const Sidebar: React.FC = () => {
               })}
             </div>
           </div>
+
 
           {/* Settings Group */}
           <div>
@@ -145,7 +151,7 @@ export const Sidebar: React.FC = () => {
                   <button
                     key={item.id}
                     onClick={() => setActiveTab(item.id)}
-                    className={`w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center space-x-3 transition-all ${
+                    className={`w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center space-x-2.5 transition-all ${
                       isActive
                         ? 'bg-brand-primary text-white shadow-md font-bold'
                         : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'

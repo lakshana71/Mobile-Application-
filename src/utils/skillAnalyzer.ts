@@ -54,6 +54,7 @@ export function generateSkillGaps(profile: UserProfile): SkillGapItem[] {
       priority: hasSkill ? 'Low' : 'High',
       trend: hasSkill ? 'Stable' : 'Critical',
       recommendedResource: `Masterclass: Advanced ${skill} Engineering`,
+      estimatedLearningHours: hasSkill ? 4 : 8,
     });
   });
 
@@ -68,6 +69,7 @@ export function generateSkillGaps(profile: UserProfile): SkillGapItem[] {
       priority: hasSkill ? 'Low' : 'Medium',
       trend: 'Rising',
       recommendedResource: `Industry Guide to ${skill}`,
+      estimatedLearningHours: 6,
     });
   });
 
@@ -89,6 +91,7 @@ export function generateSkillDecayItems(profile: UserProfile): SkillDecayItem[] 
       decayRisk,
       suggestedAction: `Practice 3 target coding challenges in ${skill} to restore memory retention.`,
       decayPercentage: Math.round(decayPercentage),
+      practiceSchedule: `3 sessions / week for ${skill}`,
     };
   });
 }

@@ -3,12 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Skill Gap Analyzer AI - 360° Career & Learning Intelligence</title>
-    <meta name="description" content="AI-powered 360° career skill gap analyzer, dynamic roadmaps, decay predictions, and project failure simulator." />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#4F46E5" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="manifest" href="/manifest.json" />
+    <title>SkillSphere AI - 360° Career & Skill Twin (Mobile & Web App)</title>
+    <meta name="description" content="AI-powered 360° career skill twin, dynamic roadmaps, decay predictions, and project failure simulator for Mobile and Web." />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(err => {
+            console.log('Service Worker registration skipped or unavailable', err);
+          });
+        });
+      }
+    </script>
   </body>
 </html>

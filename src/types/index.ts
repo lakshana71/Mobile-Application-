@@ -2,10 +2,16 @@ export type ScreenState = 'splash' | 'login' | 'questionnaire' | 'app';
 
 export type NavigationTab =
   | 'dashboard'
+  | 'circular-workflow'
+  | 'practical-assessment'
+  | 'project-analysis'
+  | 'skill-gap-engine'
+  | 'skill-genome'
+  | 'skill-evolution'
+  | 'ai-shadow-mentor'
   | 'skill-gap'
   | 'roadmap'
   | 'projects'
-  | 'project-analyzer'
   | 'analytics'
   | 'mentor'
   | 'career-goals'
@@ -14,9 +20,8 @@ export type NavigationTab =
   | 'resume-analyzer'
   | 'github-analyzer'
   | 'mock-interview'
-  | 'industry-trends'
-  | 'skill-decay'
-  | 'internships'
+  | 'digital-twin'
+  | 'ai-mentor'
   | 'community'
   | 'achievements';
 
@@ -261,13 +266,105 @@ export interface MockInterviewQuestion {
   tips: string[];
 }
 
-export interface InternshipItem {
+export interface SkillGenomeNode {
   id: string;
-  role: string;
-  company: string;
-  location: string;
-  matchScore: number;
-  stipend: string;
-  missingSkills: string[];
-  postedDaysAgo: number;
+  label: string;
+  score: number;
+  intensity: number;
+  base?: number;
+}
+
+export interface SkillEvolutionHistoryItem {
+  id: string;
+  skill: string;
+  stage: SkillEvolutionStage;
+  change: string;
+  date: string;
+  confidence: number;
+}
+
+export type SkillEvolutionStage = 'Emerging' | 'Growing' | 'Strong' | 'Declining' | 'Refresh Needed' | 'Evolved';
+
+export interface LearningBehaviour {
+  focus: string;
+  pattern: string;
+  risk: string;
+  preferredStyle: string;
+  consistency: number;
+  confidence: number;
+  lastActivity: string;
+}
+
+export interface ShadowMentorInsight {
+  id: string;
+  title: string;
+  insight: string;
+  recommendation: string;
+  priority: 'High' | 'Medium' | 'Low';
+}
+
+export interface CareerPrediction {
+  id: string;
+  title: string;
+  probability: number;
+  rationale: string;
+  nextAction: string;
+}
+
+export interface StudentDigitalTwin {
+  overview: number;
+  readiness: number;
+  health: number;
+  genome: SkillGenomeNode[];
+  evolutionHistory: SkillEvolutionHistoryItem[];
+  learningBehaviour: LearningBehaviour;
+  mentorInsights: ShadowMentorInsight[];
+  careerPredictions: CareerPrediction[];
+}
+
+export type AssessmentTaskType = 'coding' | 'debugging' | 'scenario' | 'simulation' | 'quiz';
+
+export interface PracticalAssessmentTask {
+  id: string;
+  title: string;
+  type: AssessmentTaskType;
+  category: string;
+  difficulty: DifficultyLevel;
+  question: string;
+  codeSnippet?: string;
+  options?: string[];
+  correctAnswer: string | number;
+  explanation: string;
+}
+
+export interface PracticalAssessmentResult {
+  completed: boolean;
+  score: number; // 0-100
+  totalQuestions: number;
+  correctCount: number;
+  skillWisePerformance: { skill: string; score: number }[];
+  strengths: string[];
+  weakAreas: string[];
+  timestamp: string;
+}
+
+export interface ProjectSubmissionData {
+  githubUrl?: string;
+  zipFileName?: string;
+  liveUrl?: string;
+  evaluations: {
+    codeQuality: number;
+    folderStructure: number;
+    technologiesUsed: string[];
+    apiIntegration: number;
+    databaseUsage: number;
+    authentication: number;
+    securityPractices: number;
+    deploymentReadiness: number;
+    documentation: number;
+    projectComplexity: number;
+    overallProjectScore: number;
+  };
+  scannedFiles: number;
+  timestamp: string;
 }

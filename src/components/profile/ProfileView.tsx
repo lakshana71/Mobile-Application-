@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Mail, GraduationCap, Calendar, Briefcase, Building2, Flame, Award, Layers } from 'lucide-react';
+import { Flame } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
 export const ProfileView: React.FC = () => {

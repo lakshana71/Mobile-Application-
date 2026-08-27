@@ -1,4 +1,4 @@
-import { IndustryTrend, ProjectFailureCase, AchievementBadge, MockInterviewQuestion, InternshipItem } from '../types';
+import { IndustryTrend, ProjectFailureCase, AchievementBadge, MockInterviewQuestion, SkillDecayItem } from '../types';
 
 export const DREAM_CAREERS = [
   'Software Engineer',
@@ -201,6 +201,9 @@ export const FAILURE_SIMULATIONS: ProjectFailureCase[] = [
   },
 ];
 
+export const INDUSTRY_TRENDS_DATA: IndustryTrend[] = INITIAL_INDUSTRY_TRENDS;
+export const SKILL_DECAY_DATA: SkillDecayItem[] = [];
+
 export const INITIAL_ACHIEVEMENTS: AchievementBadge[] = [
   {
     id: 'badge-1',
@@ -273,35 +276,3 @@ export const MOCK_INTERVIEW_QUESTIONS: MockInterviewQuestion[] = [
   },
 ];
 
-export const INITIAL_INTERNSHIPS: InternshipItem[] = [
-  {
-    id: 'int-1',
-    role: 'Associate AI Engineer Intern',
-    company: 'OpenAI Partner Labs',
-    location: 'Remote / San Francisco',
-    matchScore: 94,
-    stipend: '$4,500 / mo',
-    missingSkills: ['PyTorch'],
-    postedDaysAgo: 1,
-  },
-  {
-    id: 'int-2',
-    role: 'Junior Software Development Engineer',
-    company: 'Stripe Development Hub',
-    location: 'Remote',
-    matchScore: 88,
-    stipend: '$3,800 / mo',
-    missingSkills: ['System Design'],
-    postedDaysAgo: 3,
-  },
-  {
-    id: 'int-3',
-    role: 'Cloud & Infrastructure Analyst',
-    company: 'Amazon Web Services',
-    location: 'Hybrid',
-    matchScore: 82,
-    stipend: '$3,500 / mo',
-    missingSkills: ['Kubernetes'],
-    postedDaysAgo: 2,
-  },
-];

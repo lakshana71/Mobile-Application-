@@ -4,8 +4,9 @@ import { useApp } from '../../context/AppContext';
 import { generateSkillGaps } from '../../utils/skillAnalyzer';
 
 export const SkillGapMatrixView: React.FC = () => {
-  const { userProfile } = useApp();
-  const gaps = generateSkillGaps(userProfile);
+  const { userProfile, evaluatedSkills } = useApp();
+  const gaps = generateSkillGaps(userProfile, evaluatedSkills);
+
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">

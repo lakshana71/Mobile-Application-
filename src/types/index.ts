@@ -1,4 +1,7 @@
+export type { GitHubAnalysisResult } from '../services/githubAnalyzerService';
+
 export type ScreenState = 'splash' | 'login' | 'questionnaire' | 'app';
+
 
 export type NavigationTab =
   | 'dashboard'
@@ -368,3 +371,126 @@ export interface ProjectSubmissionData {
   scannedFiles: number;
   timestamp: string;
 }
+
+export type QuestionType =
+  | 'Conceptual'
+  | 'MCQ'
+  | 'Short answer'
+  | 'Scenario-based'
+  | 'Debugging'
+  | 'Code analysis'
+  | 'Architecture/design'
+  | 'Project-specific'
+  | 'GitHub-specific'
+  | 'Practical problem'
+  | 'Interview-style'
+  | 'Trade-off/decision question';
+
+export interface SkillConfidenceItem {
+  skill: string;
+  level: number; // 0 - 100
+  confidence: number; // 0 - 100%
+  sources: {
+    assessment: number;
+    project: number;
+    github: number;
+    selfReported: number;
+    coding: number;
+    interview: number;
+  };
+  evidenceCount: number;
+  trend: 'Rising' | 'Stable' | 'Critical';
+  lastUpdated: string;
+}
+
+export interface SkillEvidenceSourceItem {
+  name: string;
+  score: number;
+  weight: number;
+  confidence: number;
+  evidenceDetails: string;
+}
+
+export interface SkillEvidenceGraphNode {
+  skill: string;
+  overallScore: number;
+  confidence: number;
+  sources: SkillEvidenceSourceItem[];
+}
+
+export interface AssessmentBlueprintItem {
+  skill: string;
+  category: string;
+  importance: number; // 1-10
+  targetLevel: number; // 0-100
+  isCore: boolean;
+}
+
+export interface AssessmentBlueprint {
+  company: string;
+  role: string;
+  description: string;
+  requiredSkills: AssessmentBlueprintItem[];
+  priorities: string[];
+}
+
+export interface GeneratedQuestion {
+  questionId: string;
+  skill: string;
+  subSkill: string;
+  companyContext: string;
+  roleContext: string;
+  difficulty: DifficultyLevel;
+  questionType: QuestionType;
+  source: 'RoleBlueprint' | 'ProjectEvidence' | 'GitHubEvidence' | 'UncertaintyValidation';
+  projectReference?: string;
+  question: string;
+  codeSnippet?: string;
+  options?: string[];
+  correctAnswer: string | number;
+  explanation: string;
+  expectedCompetency: string;
+  generatedAt: string;
+  fingerprint: string;
+}
+
+export interface QuestionHistoryEntry {
+  userId: string;
+  questionId: string;
+  questionFingerprint: string;
+  skill: string;
+  difficulty: DifficultyLevel;
+  questionType: QuestionType;
+  answer: string | number;
+  score: number;
+  timestamp: string;
+}
+
+export interface AnswerEvaluationResult {
+  score: number;
+  correctness: number; // 0.0 - 1.0
+  skillImpact: number;
+  confidenceImpact: number;
+  needsFollowUp: boolean;
+  feedback: string;
+  detectedFalseProficiency?: boolean;
+  detectedHiddenSkill?: boolean;
+  explanation: string;
+}
+
+export interface AdaptiveAssessmentSession {
+  sessionId: string;
+  company: string;
+  role: string;
+  startTime: string;
+  questionsAnswered: number;
+  targetConfidenceThreshold: number;
+  isComplete: boolean;
+  completionReason: string;
+  history: QuestionHistoryEntry[];
+  currentQuestion?: GeneratedQuestion;
+  evaluatedSkills: Record<string, SkillConfidenceItem>;
+  detectedFalseProficiencies: string[];
+  detectedHiddenSkills: string[];
+}
+

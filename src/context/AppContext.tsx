@@ -18,10 +18,24 @@ import {
   saveRoadmap,
   loadNotifications,
   saveNotifications,
+  loadQuestionHistory,
+  saveQuestionHistory,
+  loadSkillConfidenceProfile,
+  saveSkillConfidenceProfile,
   DEFAULT_PROFILE,
 } from '../utils/storage';
 import { generateRoadmapForUser } from '../utils/roadmapGenerator';
 import { calculate360Score } from '../utils/skillAnalyzer';
+import {
+  buildMultiSourceSkillProfile,
+  selectNextQuestion,
+  evaluateAnswer,
+  shouldStopAssessment,
+  generateMultiSourceSkillGaps,
+  updateRoadmapFromSkillGaps,
+} from '../services/assessment';
+import { AdaptiveAssessmentSession, SkillConfidenceItem, QuestionHistoryEntry } from '../types';
+
 
 interface AppContextType {
   screen: ScreenState;
@@ -50,7 +64,16 @@ interface AppContextType {
   setIsMobileDrawerOpen: (open: boolean) => void;
   viewMode: 'web' | 'mobile' | 'simulator';
   setViewMode: (mode: 'web' | 'mobile' | 'simulator') => void;
+
+  // Adaptive Assessment & Evidence Engine
+  evaluatedSkills: Record<string, any>;
+  questionHistory: any[];
+  activeSession: any | null;
+  startAdaptiveSession: (company?: string, role?: string) => void;
+  submitAdaptiveAnswer: (answer: string | number) => any;
+  resetAdaptiveSession: () => void;
 }
+
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
@@ -246,6 +269,151 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     saveNotifications(updated);
   };
 
+  const [questionHistory, setQuestionHistory] = useState<QuestionHistoryEntry[]>(() => loadQuestionHistory());
+  const [evaluatedSkills, setEvaluatedSkills] = useState<Record<string, SkillConfidenceItem>>(() => {
+    const loaded = loadSkillConfidenceProfile();
+    return Object.keys(loaded).length > 0 ? loaded : buildMultiSourceSkillProfile(userProfile);
+  });
+  const [activeSession, setActiveSession] = useState<AdaptiveAssessmentSession | null>(null);
+
+  // Keep skill confidence profile synchronized on profile updates
+  useEffect(() => {
+    const updated = buildMultiSourceSkillProfile(userProfile, evaluatedSkills);
+    setEvaluatedSkills(updated);
+    saveSkillConfidenceProfile(updated);
+  }, [userProfile.dreamCompany, userProfile.dreamCareer]);
+
+  const startAdaptiveSession = (company?: string, role?: string) => {
+    const targetCompany = company || userProfile.dreamCompany || 'Company A';
+    const targetRole = role || userProfile.dreamCareer || 'Software Engineer';
+
+    const newSession: AdaptiveAssessmentSession = {
+      sessionId: `session_${Date.now()}`,
+      company: targetCompany,
+      role: targetRole,
+      startTime: new Date().toISOString(),
+      questionsAnswered: 0,
+      targetConfidenceThreshold: 78,
+      isComplete: false,
+      completionReason: '',
+      history: [...questionHistory],
+      evaluatedSkills: { ...evaluatedSkills },
+      detectedFalseProficiencies: [],
+      detectedHiddenSkills: [],
+    };
+
+    const firstQuestion = selectNextQuestion(newSession, userProfile);
+    newSession.currentQuestion = firstQuestion;
+
+    setActiveSession(newSession);
+  };
+
+  const submitAdaptiveAnswer = (answer: string | number) => {
+    if (!activeSession || !activeSession.currentQuestion) return null;
+
+    const q = activeSession.currentQuestion;
+    const currentSkillItem = activeSession.evaluatedSkills[q.skill];
+    const evalResult = evaluateAnswer(q, answer, userProfile, currentSkillItem);
+
+    // Create history entry
+    const newHistoryEntry: QuestionHistoryEntry = {
+      userId: userProfile.email || 'user_1',
+      questionId: q.questionId,
+      questionFingerprint: q.fingerprint,
+      skill: q.skill,
+      difficulty: q.difficulty,
+      questionType: q.questionType,
+      answer,
+      score: evalResult.score,
+      timestamp: new Date().toISOString(),
+    };
+
+    const updatedHistory = [newHistoryEntry, ...questionHistory];
+    setQuestionHistory(updatedHistory);
+    saveQuestionHistory(updatedHistory);
+
+    // Update Skill Confidence & Level
+    const prevItem = activeSession.evaluatedSkills[q.skill] || {
+      skill: q.skill,
+      level: 50,
+      confidence: 30,
+      sources: { assessment: 30, project: 40, github: 40, selfReported: 50, coding: 50, interview: 50 },
+      evidenceCount: 1,
+      trend: 'Stable',
+      lastUpdated: new Date().toLocaleDateString(),
+    };
+
+    const newLevel = Math.min(99, Math.max(10, prevItem.level + evalResult.skillImpact));
+    const newConfidence = Math.min(99, Math.max(20, prevItem.confidence + evalResult.confidenceImpact));
+    const updatedSources = {
+      ...prevItem.sources,
+      assessment: Math.min(99, Math.max(10, Math.round((prevItem.sources.assessment + evalResult.score) / 2))),
+    };
+
+    const updatedSkillItem: SkillConfidenceItem = {
+      ...prevItem,
+      level: newLevel,
+      confidence: newConfidence,
+      sources: updatedSources,
+      evidenceCount: prevItem.evidenceCount + 1,
+      trend: evalResult.skillImpact > 0 ? 'Rising' : 'Critical',
+      lastUpdated: new Date().toLocaleDateString(),
+    };
+
+    const updatedSkills = {
+      ...activeSession.evaluatedSkills,
+      [q.skill]: updatedSkillItem,
+    };
+
+    setEvaluatedSkills(updatedSkills);
+    saveSkillConfidenceProfile(updatedSkills);
+
+    // Update Roadmap priorities automatically based on new Skill Gaps!
+    const newGaps = generateMultiSourceSkillGaps(userProfile, updatedSkills);
+    const updatedRoadmap = updateRoadmapFromSkillGaps(roadmap, newGaps, userProfile);
+    setRoadmap(updatedRoadmap);
+    saveRoadmap(updatedRoadmap);
+
+    const falseProfs = [...activeSession.detectedFalseProficiencies];
+    if (evalResult.detectedFalseProficiency && !falseProfs.includes(q.skill)) {
+      falseProfs.push(q.skill);
+    }
+
+    const hiddenSkills = [...activeSession.detectedHiddenSkills];
+    if (evalResult.detectedHiddenSkill && !hiddenSkills.includes(q.skill)) {
+      hiddenSkills.push(q.skill);
+    }
+
+    const questionsAnswered = activeSession.questionsAnswered + 1;
+
+    const nextSessionState: AdaptiveAssessmentSession = {
+      ...activeSession,
+      questionsAnswered,
+      evaluatedSkills: updatedSkills,
+      history: [newHistoryEntry, ...activeSession.history],
+      detectedFalseProficiencies: falseProfs,
+      detectedHiddenSkills: hiddenSkills,
+    };
+
+    // Check dynamic stopping condition
+    const stopCheck = shouldStopAssessment(nextSessionState);
+    if (stopCheck.stop) {
+      nextSessionState.isComplete = true;
+      nextSessionState.completionReason = stopCheck.reason;
+      nextSessionState.currentQuestion = undefined;
+      confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+    } else {
+      nextSessionState.currentQuestion = selectNextQuestion(nextSessionState, userProfile);
+    }
+
+    setActiveSession(nextSessionState);
+    return evalResult;
+  };
+
+  const resetAdaptiveSession = () => {
+    setActiveSession(null);
+  };
+
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState<boolean>(false);
   const [viewMode, setViewMode] = useState<'web' | 'mobile' | 'simulator'>('web');
 
@@ -278,12 +446,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setIsMobileDrawerOpen,
         viewMode,
         setViewMode,
+        evaluatedSkills,
+        questionHistory,
+        activeSession,
+        startAdaptiveSession,
+        submitAdaptiveAnswer,
+        resetAdaptiveSession,
       }}
     >
       {children}
     </AppContext.Provider>
   );
 };
+
 
 export const useApp = () => {
   const context = useContext(AppContext);

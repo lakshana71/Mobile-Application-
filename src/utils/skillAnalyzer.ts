@@ -36,7 +36,78 @@ export function calculate360Score(profile: UserProfile, roadmap: RoadmapStep[]):
   };
 }
 
-export function generateSkillGaps(profile: UserProfile): SkillGapItem[] {
+export function generateSkillGaps(
+  profile: UserProfile,
+  evaluatedSkills?: Record<string, any>
+): SkillGapItem[] {
+  if (evaluatedSkills && Object.keys(evaluatedSkills).length > 0) {
+    const targetRole = profile.dreamCareer || 'Software Engineer';
+    const reqs = ROLE_SKILL_REQUIREMENTS[targetRole] || ROLE_SKILL_REQUIREMENTS['Software Engineer'];
+
+    const items: SkillGapItem[] = [];
+    const processed = new Set<string>();
+
+    reqs.core.forEach((skill) => {
+      processed.add(skill.toLowerCase());
+      const evalData = evaluatedSkills[skill];
+      const userLevel = evalData ? evalData.level : 20;
+      const requiredLevel = 85;
+      const gap = Math.max(0, requiredLevel - userLevel);
+
+      items.push({
+        skill,
+        category: 'Core Skill',
+        userLevel,
+        requiredLevel,
+        priority: gap > 25 ? 'High' : gap > 10 ? 'Medium' : 'Low',
+        trend: gap > 20 ? 'Critical' : 'Stable',
+        recommendedResource: `Masterclass: Advanced ${skill} Engineering`,
+        estimatedLearningHours: Math.max(4, Math.round(gap / 5)),
+      });
+    });
+
+    reqs.optional.forEach((skill) => {
+      processed.add(skill.toLowerCase());
+      const evalData = evaluatedSkills[skill];
+      const userLevel = evalData ? evalData.level : 15;
+      const requiredLevel = 75;
+      const gap = Math.max(0, requiredLevel - userLevel);
+
+      items.push({
+        skill,
+        category: 'Secondary Skill',
+        userLevel,
+        requiredLevel,
+        priority: gap > 20 ? 'Medium' : 'Low',
+        trend: 'Rising',
+        recommendedResource: `Industry Guide to ${skill}`,
+        estimatedLearningHours: Math.max(3, Math.round(gap / 6)),
+      });
+    });
+
+    // Add any extra evaluated skills not in predefined lists
+    Object.values(evaluatedSkills).forEach((item: any) => {
+      if (!processed.has(item.skill.toLowerCase())) {
+        const userLevel = item.level;
+        const requiredLevel = 75;
+        const gap = Math.max(0, requiredLevel - userLevel);
+
+        items.push({
+          skill: item.skill,
+          category: 'Evidence Verified Skill',
+          userLevel,
+          requiredLevel,
+          priority: gap > 20 ? 'High' : 'Low',
+          trend: item.trend || 'Stable',
+          recommendedResource: `Targeted Practice for ${item.skill}`,
+          estimatedLearningHours: 5,
+        });
+      }
+    });
+
+    return items;
+  }
+
   const targetRole = profile.dreamCareer || 'Software Engineer';
   const reqs = ROLE_SKILL_REQUIREMENTS[targetRole] || ROLE_SKILL_REQUIREMENTS['Software Engineer'];
   const userSkillSet = new Set(profile.currentSkills.map((s) => s.toLowerCase()));

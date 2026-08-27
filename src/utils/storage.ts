@@ -8,20 +8,22 @@ const STORAGE_KEYS = {
   ROADMAP: 'skillgap_user_roadmap',
   MENTOR_CHAT: 'skillgap_mentor_chat',
   NOTIFICATIONS: 'skillgap_notifications',
+  QUESTION_HISTORY: 'skillgap_question_history',
+  SKILL_CONFIDENCE: 'skillgap_skill_confidence',
 };
 
 export const DEFAULT_PROFILE: UserProfile = {
   name: 'Alex Johnson',
   email: 'alex.johnson@university.edu',
   avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-  dreamCareer: 'AI Engineer',
+  dreamCareer: 'Software Engineer',
   education: 'B.Tech',
   currentYear: '3rd Year',
-  currentSkills: ['Python', 'SQL', 'Git & GitHub', 'Communication'],
+  currentSkills: ['Python', 'Java', 'SQL', 'Git & GitHub'],
   skillLevel: 'Intermediate',
   preferredLearningStyle: 'Projects',
   weeklyHours: '15',
-  dreamCompany: 'Google',
+  dreamCompany: 'Company A',
   timeline: '1 year',
   challenges: ['No Roadmap', 'Skill Gap', 'Placement Fear'],
   joinedDate: 'July 2026',
@@ -49,8 +51,8 @@ export const DEFAULT_NOTIFICATIONS: NotificationItem[] = [
   },
   {
     id: 'notif-3',
-    title: 'Google Mock Interview Scheduled',
-    message: 'AI Mock Interview session ready for Google AI Engineering track.',
+    title: 'Company A Mock Interview Scheduled',
+    message: 'AI Mock Interview session ready for Company A track.',
     type: 'interview',
     timestamp: '1 day ago',
     read: true,
@@ -113,3 +115,36 @@ export const loadNotifications = (): NotificationItem[] => {
 export const saveNotifications = (notifs: NotificationItem[]): void => {
   localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(notifs));
 };
+
+export const loadQuestionHistory = (): any[] => {
+  const data = localStorage.getItem(STORAGE_KEYS.QUESTION_HISTORY);
+  if (data) {
+    try {
+      return JSON.parse(data);
+    } catch {
+      return [];
+    }
+  }
+  return [];
+};
+
+export const saveQuestionHistory = (history: any[]): void => {
+  localStorage.setItem(STORAGE_KEYS.QUESTION_HISTORY, JSON.stringify(history));
+};
+
+export const loadSkillConfidenceProfile = (): Record<string, any> => {
+  const data = localStorage.getItem(STORAGE_KEYS.SKILL_CONFIDENCE);
+  if (data) {
+    try {
+      return JSON.parse(data);
+    } catch {
+      return {};
+    }
+  }
+  return {};
+};
+
+export const saveSkillConfidenceProfile = (profile: Record<string, any>): void => {
+  localStorage.setItem(STORAGE_KEYS.SKILL_CONFIDENCE, JSON.stringify(profile));
+};
+
